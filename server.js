@@ -10,7 +10,7 @@ const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
 
 const fs = require('fs');
-const path = require('path');
+
 
 // Load logo as base64
 const logoPath = path.join(__dirname, 'public', 'logomain.jpg'); // updated filename
