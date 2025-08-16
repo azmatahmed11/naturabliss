@@ -396,14 +396,13 @@ async function buildOrderHtml(order) {
 }
 
 
-
 async function buildCustomerOrderHtml(order) {
   const itemsRows = order.cart.map(it => {
     const product = PRODUCTS.find(p => p.id === it.id);
     return `
       <tr style="font-size:12px;background-color:#fff;">
-        <td style="padding:6px;border:1px solid #ddd;word-wrap:break-word;">${it.id}</td>
-        <td style="padding:6px;border:1px solid #ddd;word-wrap:break-word;">${it.name || 'N/A'}</td>
+        <td style="padding:6px;border:1px solid #ddd;word-break:break-word;">${it.id}</td>
+        <td style="padding:6px;border:1px solid #ddd;word-break:break-word;">${it.name || 'N/A'}</td>
         <td style="padding:6px;border:1px solid #ddd;text-align:center;">${it.qty}</td>
         <td style="padding:6px;border:1px solid #ddd;text-align:right;">₨${it.price?.toFixed(2) || '0.00'}</td>
         <td style="padding:6px;border:1px solid #ddd;text-align:center;">${product?.volume || '-'}</td>
@@ -430,8 +429,8 @@ async function buildCustomerOrderHtml(order) {
 
         <h3 style="color:#2E7D32; margin-top:20px; font-size:16px;">🛒 Your Order Summary</h3>
 
-        <!-- Responsive-friendly table -->
-        <table style="border-collapse:collapse;width:100%;margin-bottom:20px;table-layout:fixed;">
+        <!-- Clean, non-stretching table -->
+        <table style="border-collapse:collapse;width:100%;margin-bottom:20px;table-layout:auto;">
           <thead style="background:#e6f5ea;font-size:12px;">
             <tr>
               <th style="padding:6px;border:1px solid #ddd;text-align:left;">SKU</th>
