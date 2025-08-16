@@ -306,7 +306,7 @@ function enrichCartItems(cart) {
 async function buildOrderHtml(order) {
   const itemsRows = order.cart.map((it, i) => {
     const product = PRODUCTS.find(p => p.id === it.id);
-    const bgColor = i % 2 === 0 ? '#f6fff6' : '#ffffff'; // alternating row colors
+    const bgColor = i % 2 === 0 ? '#f6fff6' : '#ffffff';
     return `
       <tr style="background-color:${bgColor};font-size:14px;">
         <td style="padding:10px;border:1px solid #cfcfcf">${it.id}</td>
@@ -356,9 +356,9 @@ async function buildOrderHtml(order) {
 
       <h3 style="color:#1b5e20;border-bottom:2px solid #c8e6c9;padding-bottom:4px;">Ordered Items</h3>
 
-      <!-- Responsive Scroll Wrapper -->
-      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;">
-        <table style="border-collapse:collapse;width:100%;min-width:600px;margin-bottom:20px;table-layout:auto;">
+      <!-- Email-Safe Responsive Scroll Wrapper -->
+      <div style="width:100%;overflow-x:auto;display:block;-webkit-overflow-scrolling:touch;">
+        <table style="border-collapse:collapse;min-width:600px;width:100%;margin-bottom:20px;table-layout:auto;">
           <thead style="background-color:#a5d6a7;color:#1b5e20">
             <tr>
               <th style="padding:10px;border:1px solid #cfcfcf;text-align:left;">SKU</th>
@@ -398,17 +398,18 @@ async function buildOrderHtml(order) {
 }
 
 
+
 async function buildCustomerOrderHtml(order) {
   const itemsRows = order.cart.map(it => {
     const product = PRODUCTS.find(p => p.id === it.id);
     return `
       <tr>
-        <td style="padding:10px;border:1px solid #ddd; text-align:center;">${it.id}</td>
-        <td style="padding:10px;border:1px solid #ddd;">${it.name || 'N/A'}</td>
-        <td style="padding:10px;border:1px solid #ddd; text-align:center;">${it.qty}</td>
-        <td style="padding:10px;border:1px solid #ddd; text-align:right;">₨${it.price?.toFixed(2) || '0.00'}</td>
-        <td style="padding:10px;border:1px solid #ddd; text-align:center;">${product?.volume || '-'}</td>
-        <td style="padding:10px;border:1px solid #ddd; text-align:right;">₨${(it.price * it.qty).toFixed(2)}</td>
+        <td style="padding:10px;border:1px solid #ddd;" data-label="SKU">${it.id}</td>
+        <td style="padding:10px;border:1px solid #ddd;" data-label="Product">${it.name || 'N/A'}</td>
+        <td style="padding:10px;border:1px solid #ddd;" data-label="Qty">${it.qty}</td>
+        <td style="padding:10px;border:1px solid #ddd;" data-label="Price">₨${it.price?.toFixed(2) || '0.00'}</td>
+        <td style="padding:10px;border:1px solid #ddd;" data-label="Volume">${product?.volume || '-'}</td>
+        <td style="padding:10px;border:1px solid #ddd;" data-label="Subtotal">₨${(it.price * it.qty).toFixed(2)}</td>
       </tr>
     `;
   }).join('');
@@ -422,7 +423,6 @@ async function buildCustomerOrderHtml(order) {
         ${logoBase64 ? `<img src="${logoBase64}" alt="Natura Bliss" style="max-width:180px; height:auto;"/>` : ''}
       </div>
 
-      <!-- Greeting -->
       <div style="padding:20px;">
         <h2 style="color:#2E7D32; text-align:center;">🌿 Thank you for your order, ${order.personalDetails.name}! 🌿</h2>
         <p style="text-align:center; font-size:16px; color:#555;">
@@ -430,43 +430,66 @@ async function buildCustomerOrderHtml(order) {
           Your order has been received and we’ll contact you within 24 hours to confirm delivery.
         </p>
 
-        <!-- Ordered Items -->
         <h3 style="color:#2E7D32; margin-top:30px;">🛒 Your Order Summary</h3>
-        
-        <!-- 🔥 Fix: scrollable table on mobile -->
-        <div style="width:100%; overflow-x:auto;">
-          <table style="border-collapse:collapse; min-width:600px; width:100%;">
-            <thead>
-              <tr style="background:#e6f5ea;">
-                <th style="padding:10px;border:1px solid #ddd">SKU</th>
-                <th style="padding:10px;border:1px solid #ddd">Product</th>
-                <th style="padding:10px;border:1px solid #ddd">Qty</th>
-                <th style="padding:10px;border:1px solid #ddd">Price</th>
-                <th style="padding:10px;border:1px solid #ddd">Volume</th>
-                <th style="padding:10px;border:1px solid #ddd">Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${itemsRows}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="5" style="padding:10px;border:1px solid #ddd;text-align:right"><strong>Items Total</strong></td>
-                <td style="padding:10px;border:1px solid #ddd;text-align:right">₨${order.subtotal.toFixed(2)}</td>
-              </tr>
-              <tr>
-                <td colspan="5" style="padding:10px;border:1px solid #ddd;text-align:right"><strong>Delivery</strong></td>
-                <td style="padding:10px;border:1px solid #ddd;text-align:right">${order.deliveryCharge === 0 ? 'Free' : '₨' + order.deliveryCharge.toFixed(2)}</td>
-              </tr>
-              <tr style="background:#e6f5ea; font-weight:bold;">
-                <td colspan="5" style="padding:10px;border:1px solid #ddd;text-align:right"><strong>Grand Total</strong></td>
-                <td style="padding:10px;border:1px solid #ddd;text-align:right; color:#2E7D32;">₨${order.totalPrice.toFixed(2)}</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
 
-        <!-- Delivery Address -->
+        <!-- Responsive Table -->
+        <table style="border-collapse:collapse; width:100%; min-width:100%;">
+          <thead style="background:#e6f5ea;">
+            <tr>
+              <th style="padding:10px;border:1px solid #ddd;">SKU</th>
+              <th style="padding:10px;border:1px solid #ddd;">Product</th>
+              <th style="padding:10px;border:1px solid #ddd;">Qty</th>
+              <th style="padding:10px;border:1px solid #ddd;">Price</th>
+              <th style="padding:10px;border:1px solid #ddd;">Volume</th>
+              <th style="padding:10px;border:1px solid #ddd;">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsRows}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="5" style="padding:10px;border:1px solid #ddd;text-align:right"><strong>Items Total</strong></td>
+              <td style="padding:10px;border:1px solid #ddd;text-align:right">₨${order.subtotal.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td colspan="5" style="padding:10px;border:1px solid #ddd;text-align:right"><strong>Delivery</strong></td>
+              <td style="padding:10px;border:1px solid #ddd;text-align:right">${order.deliveryCharge === 0 ? 'Free' : '₨' + order.deliveryCharge.toFixed(2)}</td>
+            </tr>
+            <tr style="background:#e6f5ea; font-weight:bold;">
+              <td colspan="5" style="padding:10px;border:1px solid #ddd;text-align:right"><strong>Grand Total</strong></td>
+              <td style="padding:10px;border:1px solid #ddd;text-align:right; color:#2E7D32;">₨${order.totalPrice.toFixed(2)}</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- Mobile Stacking Style -->
+        <style>
+          @media only screen and (max-width: 600px) {
+            table, thead, tbody, th, td, tr {
+              display: block !important;
+              width: 100% !important;
+            }
+            thead { display: none !important; }
+            td {
+              border: none !important;
+              position: relative;
+              padding-left: 50% !important;
+              text-align: left !important;
+            }
+            td::before {
+              position: absolute;
+              top: 10px;
+              left: 10px;
+              width: 45%;
+              font-weight: bold;
+              white-space: nowrap;
+              content: attr(data-label);
+            }
+          }
+        </style>
+
+        <!-- Address -->
         <h3 style="color:#2E7D32; margin-top:30px;">📦 Shipping Details</h3>
         <p style="line-height:1.6; color:#444;">
           <strong>${order.shippingDetails.name}</strong><br/>
@@ -475,7 +498,6 @@ async function buildCustomerOrderHtml(order) {
           Phone: ${order.shippingDetails.phone}<br/>
         </p>
 
-        <!-- Thank You Note -->
         <div style="margin-top:30px; text-align:center;">
           <p style="font-size:16px; color:#2E7D32;">
             💚 Thank you for shopping with Natura Bliss!  
@@ -483,7 +505,6 @@ async function buildCustomerOrderHtml(order) {
           </p>
         </div>
 
-        <!-- Footer -->
         <p style="margin-top:30px; text-align:center; color:#777; font-size:12px;">
           If you have any questions, reply to this email or contact us at <strong>${ADMIN_EMAIL}</strong>.<br/>
           &copy; ${new Date().getFullYear()} Natura Bliss 🌿
@@ -493,6 +514,7 @@ async function buildCustomerOrderHtml(order) {
   </div>
   `;
 }
+
 
 
 
