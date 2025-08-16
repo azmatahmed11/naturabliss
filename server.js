@@ -401,13 +401,13 @@ async function buildCustomerOrderHtml(order) {
   const itemsRows = order.cart.map(it => {
     const product = PRODUCTS.find(p => p.id === it.id);
     return `
-      <tr style="font-size:12px;background-color:#fff;">
-        <td style="padding:6px;border:1px solid #ddd;word-wrap:break-word;">${it.id}</td>
-        <td style="padding:6px;border:1px solid #ddd;word-wrap:break-word;">${it.name || 'N/A'}</td>
-        <td style="padding:6px;border:1px solid #ddd;text-align:center;">${it.qty}</td>
-        <td style="padding:6px;border:1px solid #ddd;text-align:right;">₨${it.price?.toFixed(2) || '0.00'}</td>
-        <td style="padding:6px;border:1px solid #ddd;text-align:center;">${product?.volume || '-'}</td>
-        <td style="padding:6px;border:1px solid #ddd;text-align:right;">₨${(it.price * it.qty).toFixed(2)}</td>
+      <tr style="font-size:13px;background-color:#fff;">
+        <td style="padding:6px;border:1px solid #ddd;white-space:nowrap;">${it.id}</td>
+        <td style="padding:6px;border:1px solid #ddd;">${it.name || 'N/A'}</td>
+        <td style="padding:6px;border:1px solid #ddd;text-align:center;white-space:nowrap;">${it.qty}</td>
+        <td style="padding:6px;border:1px solid #ddd;text-align:right;white-space:nowrap;">₨${it.price?.toFixed(2) || '0.00'}</td>
+        <td style="padding:6px;border:1px solid #ddd;text-align:center;white-space:nowrap;">${product?.volume || '-'}</td>
+        <td style="padding:6px;border:1px solid #ddd;text-align:right;white-space:nowrap;">₨${(it.price * it.qty).toFixed(2)}</td>
       </tr>
     `;
   }).join('');
@@ -430,9 +430,9 @@ async function buildCustomerOrderHtml(order) {
 
         <h3 style="color:#2E7D32; margin-top:20px; font-size:16px;">🛒 Your Order Summary</h3>
 
-        <!-- Responsive-friendly table -->
-        <table style="border-collapse:collapse;width:100%;margin-bottom:20px;table-layout:fixed;">
-          <thead style="background:#e6f5ea;font-size:12px;">
+        <!-- Clear & readable table -->
+        <table style="border-collapse:collapse;width:100%;margin-bottom:20px;">
+          <thead style="background:#e6f5ea;font-size:13px;">
             <tr>
               <th style="padding:6px;border:1px solid #ddd;text-align:left;">SKU</th>
               <th style="padding:6px;border:1px solid #ddd;text-align:left;">Product</th>
@@ -445,7 +445,7 @@ async function buildCustomerOrderHtml(order) {
           <tbody>
             ${itemsRows}
           </tbody>
-          <tfoot style="font-size:12px;">
+          <tfoot style="font-size:13px;">
             <tr>
               <td colspan="5" style="padding:6px;border:1px solid #ddd;text-align:right"><strong>Items Total</strong></td>
               <td style="padding:6px;border:1px solid #ddd;text-align:right">₨${order.subtotal.toFixed(2)}</td>
