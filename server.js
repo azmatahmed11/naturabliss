@@ -489,8 +489,6 @@ async function buildCustomerOrderHtml(order) {
 
 
 
-
-
 // API route to handle order submission
 app.post('/api/order', async (req, res) => {
   try {
@@ -512,45 +510,53 @@ app.post('/api/order', async (req, res) => {
       return res.status(400).json({ message: "Invalid order payload" });
     }
 
-    // Enrich cart with product details before email
-    order.cart = order.cart.map(item => {
-      const product = PRODUCTS.find(p => p.id === item.id);
-      return {
-        id: item.id,
-        qty: item.qty,
-        name: product ? product.name : 'Unknown product',
-        price: product ? product.price : 0
-      };
-    });
+    // ✅ Respond immediately to frontend
+    res.json({ success: true, message: "Order received! Sending emails..." });
 
-    // 1️⃣ Build admin email HTML
-    const adminHtml = await buildOrderHtml(order);
+    // 🔄 Continue email sending in background
+    (async () => {
+      try {
+        // Enrich cart with product details
+        order.cart = order.cart.map(item => {
+          const product = PRODUCTS.find(p => p.id === item.id);
+          return {
+            id: item.id,
+            qty: item.qty,
+            name: product ? product.name : 'Unknown product',
+            price: product ? product.price : 0
+          };
+        });
 
-    // 2️⃣ Send email to admin
-    const adminMailOptions = {
-      from: `"${process.env.SENDER_NAME || 'Shop'}" <${process.env.SMTP_USER}>`,
-      to: ADMIN_EMAIL,
-      subject: `New Order — ${order.personalDetails.name} — ₨${order.totalPrice.toFixed(2)}`,
-      html: adminHtml
-    };
-    await transporter.sendMail(adminMailOptions);
-    console.log('✅ Email sent to admin:', ADMIN_EMAIL);
+        // 1️⃣ Build admin email
+        const adminHtml = await buildOrderHtml(order);
 
-    // 3️⃣ Build customer email HTML
-    const customerHtml = await buildCustomerOrderHtml(order);
+        // 2️⃣ Send to admin
+        const adminMailOptions = {
+          from: `"${process.env.SENDER_NAME || 'Shop'}" <${process.env.SMTP_USER}>`,
+          to: ADMIN_EMAIL,
+          subject: `New Order — ${order.personalDetails.name} — ₨${order.totalPrice.toFixed(2)}`,
+          html: adminHtml
+        };
+        await transporter.sendMail(adminMailOptions);
+        console.log('✅ Email sent to admin:', ADMIN_EMAIL);
 
-    // 4️⃣ Send confirmation email to customer
-    const customerMailOptions = {
-      from: `"Natura Bliss" <${process.env.SMTP_USER}>`,
-      to: order.personalDetails.email,
-      subject: `Your Natura Bliss Order Confirmation — ₨${order.totalPrice.toFixed(2)}`,
-      html: customerHtml
-    };
-    await transporter.sendMail(customerMailOptions);
-    console.log('✅ Confirmation email sent to', order.personalDetails.email);
+        // 3️⃣ Build customer email
+        const customerHtml = await buildCustomerOrderHtml(order);
 
-    // 5️⃣ Respond to frontend
-    return res.json({ success: true, message: "Order sent to admin and confirmation sent to customer" });
+        // 4️⃣ Send to customer
+        const customerMailOptions = {
+          from: `"Natura Bliss" <${process.env.SMTP_USER}>`,
+          to: order.personalDetails.email,
+          subject: `Your Natura Bliss Order Confirmation — ₨${order.totalPrice.toFixed(2)}`,
+          html: customerHtml
+        };
+        await transporter.sendMail(customerMailOptions);
+        console.log('✅ Confirmation email sent to', order.personalDetails.email);
+
+      } catch (err) {
+        console.error("❌ Background email error:", err);
+      }
+    })();
 
   } catch (err) {
     console.error("❌ Send mail error:", err);
@@ -558,11 +564,11 @@ app.post('/api/order', async (req, res) => {
   }
 });
 
-
-
-// Health check route
+// Health check
 app.get('/', (req, res) => res.send('OK'));
 
 // Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+app.listen(PORT, () =>
+  console.log(`🚀 Server running on http://localhost:${PORT}`)
+);
