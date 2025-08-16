@@ -308,7 +308,7 @@ async function buildOrderHtml(order) {
     const product = PRODUCTS.find(p => p.id === it.id);
     const bgColor = i % 2 === 0 ? '#f6fff6' : '#ffffff'; // alternating row colors
     return `
-      <tr style="background-color:${bgColor};">
+      <tr style="background-color:${bgColor};font-size:14px;">
         <td style="padding:10px;border:1px solid #cfcfcf">${it.id}</td>
         <td style="padding:10px;border:1px solid #cfcfcf">${it.name || 'N/A'}</td>
         <td style="padding:10px;border:1px solid #cfcfcf;text-align:center">${it.qty}</td>
@@ -320,15 +320,18 @@ async function buildOrderHtml(order) {
   }).join('');
 
   return `
-    <div style="font-family:Arial,sans-serif;color:#2f4f2f;background-color:#f0fff0;padding:20px">
+    <div style="font-family:Arial,sans-serif;color:#2f4f2f;background-color:#f9fff9;padding:20px;max-width:800px;margin:auto;border-radius:8px;">
       ${logoBase64 ? `<div style="text-align:center;margin-bottom:20px;">
-        <img src="${logoBase64}" alt="Natura Bliss" style="max-width:180px;">
+        <img src="${logoBase64}" alt="Natura Bliss" style="max-width:160px;height:auto;">
       </div>` : ''}
 
-      <h2 style="color:#2e7d32;text-align:center;">🌿 New Order Received — ${new Date(order.orderDate).toLocaleString()}</h2>
+      <h2 style="color:#2e7d32;text-align:center;margin-bottom:10px;">🌿 New Order Received</h2>
+      <p style="text-align:center;font-size:14px;color:#666;margin-top:0;">
+        ${new Date(order.orderDate).toLocaleString()}
+      </p>
 
-      <h3 style="color:#1b5e20;">Customer Details</h3>
-      <p>
+      <h3 style="color:#1b5e20;border-bottom:2px solid #c8e6c9;padding-bottom:4px;">Customer Details</h3>
+      <p style="font-size:14px;line-height:1.5;">
         <strong>Name:</strong> ${order.personalDetails.name}<br/>
         <strong>Email:</strong> ${order.personalDetails.email}<br/>
         <strong>Phone:</strong> ${order.personalDetails.phone}<br/>
@@ -339,8 +342,8 @@ async function buildOrderHtml(order) {
         ${order.personalDetails.additionalDetails ? `<strong>Additional Details:</strong> ${order.personalDetails.additionalDetails}<br/>` : ''}
       </p>
 
-      <h3 style="color:#1b5e20;">Shipping Details</h3>
-      <p>
+      <h3 style="color:#1b5e20;border-bottom:2px solid #c8e6c9;padding-bottom:4px;">Shipping Details</h3>
+      <p style="font-size:14px;line-height:1.5;">
         <strong>Name:</strong> ${order.shippingDetails.name}<br/>
         <strong>Email:</strong> ${order.shippingDetails.email}<br/>
         <strong>Phone:</strong> ${order.shippingDetails.phone}<br/>
@@ -351,121 +354,144 @@ async function buildOrderHtml(order) {
         ${order.shippingDetails.additionalDetails ? `<strong>Additional Details:</strong> ${order.shippingDetails.additionalDetails}<br/>` : ''}
       </p>
 
-      <h3 style="color:#1b5e20;">Ordered Items</h3>
-      <table style="border-collapse:collapse;width:100%;max-width:700px;margin-bottom:20px">
-        <thead style="background-color:#a5d6a7;color:#1b5e20">
-          <tr>
-            <th style="padding:10px;border:1px solid #cfcfcf">SKU</th>
-            <th style="padding:10px;border:1px solid #cfcfcf">Product</th>
-            <th style="padding:10px;border:1px solid #cfcfcf">Qty</th>
-            <th style="padding:10px;border:1px solid #cfcfcf">Price</th>
-            <th style="padding:10px;border:1px solid #cfcfcf">Volume</th>
-            <th style="padding:10px;border:1px solid #cfcfcf">Subtotal</th>
-          </tr>
-        </thead>
-        <tbody>${itemsRows}</tbody>
-        <tfoot>
-          <tr style="background-color:#e8f5e9">
-            <td colspan="5" style="padding:10px;border:1px solid #cfcfcf;text-align:right"><strong>Items Total</strong></td>
-            <td style="padding:10px;border:1px solid #cfcfcf;text-align:right">₨${order.subtotal.toFixed(2)}</td>
-          </tr>
-          <tr style="background-color:#e8f5e9">
-            <td colspan="5" style="padding:10px;border:1px solid #cfcfcf;text-align:right"><strong>Delivery</strong></td>
-            <td style="padding:10px;border:1px solid #cfcfcf;text-align:right">${order.deliveryCharge === 0 ? 'Free' : '₨' + order.deliveryCharge.toFixed(2)}</td>
-          </tr>
-          <tr style="background-color:#c8e6c9">
-            <td colspan="5" style="padding:10px;border:1px solid #cfcfcf;text-align:right"><strong>Grand Total</strong></td>
-            <td style="padding:10px;border:1px solid #cfcfcf;text-align:right">₨${order.totalPrice.toFixed(2)}</td>
-          </tr>
-        </tfoot>
-      </table>
+      <h3 style="color:#1b5e20;border-bottom:2px solid #c8e6c9;padding-bottom:4px;">Ordered Items</h3>
 
-      <h3 style="color:#1b5e20;">Payment Method</h3>
-      <p>${order.paymentMethod}</p>
+      <!-- Responsive Wrapper -->
+      <div style="overflow-x:auto;width:100%;-webkit-overflow-scrolling:touch;">
+        <table style="border-collapse:collapse;width:100%;min-width:600px;margin-bottom:20px;">
+          <thead style="background-color:#a5d6a7;color:#1b5e20">
+            <tr>
+              <th style="padding:10px;border:1px solid #cfcfcf">SKU</th>
+              <th style="padding:10px;border:1px solid #cfcfcf">Product</th>
+              <th style="padding:10px;border:1px solid #cfcfcf">Qty</th>
+              <th style="padding:10px;border:1px solid #cfcfcf">Price</th>
+              <th style="padding:10px;border:1px solid #cfcfcf">Volume</th>
+              <th style="padding:10px;border:1px solid #cfcfcf">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>${itemsRows}</tbody>
+          <tfoot>
+            <tr style="background-color:#e8f5e9">
+              <td colspan="5" style="padding:10px;border:1px solid #cfcfcf;text-align:right"><strong>Items Total</strong></td>
+              <td style="padding:10px;border:1px solid #cfcfcf;text-align:right">₨${order.subtotal.toFixed(2)}</td>
+            </tr>
+            <tr style="background-color:#e8f5e9">
+              <td colspan="5" style="padding:10px;border:1px solid #cfcfcf;text-align:right"><strong>Delivery</strong></td>
+              <td style="padding:10px;border:1px solid #cfcfcf;text-align:right">${order.deliveryCharge === 0 ? 'Free' : '₨' + order.deliveryCharge.toFixed(2)}</td>
+            </tr>
+            <tr style="background-color:#c8e6c9">
+              <td colspan="5" style="padding:10px;border:1px solid #cfcfcf;text-align:right"><strong>Grand Total</strong></td>
+              <td style="padding:10px;border:1px solid #cfcfcf;text-align:right">₨${order.totalPrice.toFixed(2)}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
 
-      <p style="text-align:center;margin-top:30px;color:#388e3c;font-style:italic;">Thank you for choosing Natura Bliss 🌿</p>
+      <h3 style="color:#1b5e20;border-bottom:2px solid #c8e6c9;padding-bottom:4px;">Payment Method</h3>
+      <p style="font-size:14px;">${order.paymentMethod}</p>
+
+      <p style="text-align:center;margin-top:30px;color:#388e3c;font-style:italic;">
+        Thank you for choosing Natura Bliss 🌿
+      </p>
     </div>
   `;
 }
+
 
 async function buildCustomerOrderHtml(order) {
   const itemsRows = order.cart.map(it => {
     const product = PRODUCTS.find(p => p.id === it.id);
     return `
       <tr>
-        <td style="padding:6px;border:1px solid #ddd">${it.id}</td>
-        <td style="padding:6px;border:1px solid #ddd">${it.name || 'N/A'}</td>
-        <td style="padding:6px;border:1px solid #ddd;text-align:right">${it.qty}</td>
-        <td style="padding:6px;border:1px solid #ddd;text-align:right">₨${it.price?.toFixed(2) || '0.00'}</td>
-        <td style="padding:6px;border:1px solid #ddd;text-align:right">${product?.volume || '-'}</td>
-        <td style="padding:6px;border:1px solid #ddd;text-align:right">₨${(it.price * it.qty).toFixed(2)}</td>
+        <td style="padding:10px;border:1px solid #ddd; text-align:center;">${it.id}</td>
+        <td style="padding:10px;border:1px solid #ddd;">${it.name || 'N/A'}</td>
+        <td style="padding:10px;border:1px solid #ddd; text-align:center;">${it.qty}</td>
+        <td style="padding:10px;border:1px solid #ddd; text-align:right;">₨${it.price?.toFixed(2) || '0.00'}</td>
+        <td style="padding:10px;border:1px solid #ddd; text-align:center;">${product?.volume || '-'}</td>
+        <td style="padding:10px;border:1px solid #ddd; text-align:right;">₨${(it.price * it.qty).toFixed(2)}</td>
       </tr>
     `;
   }).join('');
 
   return `
-  <div style="font-family:Arial,sans-serif; color:#2E3A2F; background:#f9f9f9; padding:20px;">
-    <div style="max-width:700px; margin:auto; background:#fff; border-radius:8px; overflow:hidden; border:1px solid #ddd;">
+  <div style="font-family:Arial,sans-serif; color:#2E3A2F; background:#f4f7f6; padding:20px;">
+    <div style="max-width:700px; margin:auto; background:#fff; border-radius:10px; overflow:hidden; border:1px solid #ddd;">
       
       <!-- Logo -->
       <div style="background:#e6f5ea; text-align:center; padding:20px;">
-        ${logoBase64 ? `<img src="${logoBase64}" alt="Natura Bliss" style="max-width:200px;"/>` : ''}
+        ${logoBase64 ? `<img src="${logoBase64}" alt="Natura Bliss" style="max-width:180px; height:auto;"/>` : ''}
       </div>
 
       <!-- Greeting -->
       <div style="padding:20px;">
-        <h2 style="color:#2E7D32;">Thank you for your order, ${order.personalDetails.name}!</h2>
-        <p>We have received your order and will contact you within 24 hours to confirm delivery details.</p>
+        <h2 style="color:#2E7D32; text-align:center;">🌿 Thank you for your order, ${order.personalDetails.name}! 🌿</h2>
+        <p style="text-align:center; font-size:16px; color:#555;">
+          We truly appreciate your trust in <strong>Natura Bliss</strong>.  
+          Your order has been received and we’ll contact you within 24 hours to confirm delivery.
+        </p>
 
         <!-- Ordered Items -->
-        <h3 style="color:#2E7D32;">Your Order Details</h3>
-        <table style="border-collapse:collapse;width:100%;">
-          <thead>
-            <tr style="background:#e6f5ea;">
-              <th style="padding:6px;border:1px solid #ddd">SKU</th>
-              <th style="padding:6px;border:1px solid #ddd">Product</th>
-              <th style="padding:6px;border:1px solid #ddd">Qty</th>
-              <th style="padding:6px;border:1px solid #ddd">Price</th>
-              <th style="padding:6px;border:1px solid #ddd">Volume</th>
-              <th style="padding:6px;border:1px solid #ddd">Subtotal</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${itemsRows}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="5" style="padding:6px;border:1px solid #ddd;text-align:right"><strong>Items Total</strong></td>
-              <td style="padding:6px;border:1px solid #ddd;text-align:right">₨${order.subtotal.toFixed(2)}</td>
-            </tr>
-            <tr>
-              <td colspan="5" style="padding:6px;border:1px solid #ddd;text-align:right"><strong>Delivery</strong></td>
-              <td style="padding:6px;border:1px solid #ddd;text-align:right">${order.deliveryCharge === 0 ? 'Free' : '₨' + order.deliveryCharge.toFixed(2)}</td>
-            </tr>
-            <tr>
-              <td colspan="5" style="padding:6px;border:1px solid #ddd;text-align:right"><strong>Grand Total</strong></td>
-              <td style="padding:6px;border:1px solid #ddd;text-align:right">₨${order.totalPrice.toFixed(2)}</td>
-            </tr>
-          </tfoot>
-        </table>
+        <h3 style="color:#2E7D32; margin-top:30px;">🛒 Your Order Summary</h3>
+        <div style="overflow-x:auto;">
+          <table style="border-collapse:collapse; width:100%; min-width:500px;">
+            <thead>
+              <tr style="background:#e6f5ea;">
+                <th style="padding:10px;border:1px solid #ddd">SKU</th>
+                <th style="padding:10px;border:1px solid #ddd">Product</th>
+                <th style="padding:10px;border:1px solid #ddd">Qty</th>
+                <th style="padding:10px;border:1px solid #ddd">Price</th>
+                <th style="padding:10px;border:1px solid #ddd">Volume</th>
+                <th style="padding:10px;border:1px solid #ddd">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsRows}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="5" style="padding:10px;border:1px solid #ddd;text-align:right"><strong>Items Total</strong></td>
+                <td style="padding:10px;border:1px solid #ddd;text-align:right">₨${order.subtotal.toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td colspan="5" style="padding:10px;border:1px solid #ddd;text-align:right"><strong>Delivery</strong></td>
+                <td style="padding:10px;border:1px solid #ddd;text-align:right">${order.deliveryCharge === 0 ? 'Free' : '₨' + order.deliveryCharge.toFixed(2)}</td>
+              </tr>
+              <tr style="background:#e6f5ea; font-weight:bold;">
+                <td colspan="5" style="padding:10px;border:1px solid #ddd;text-align:right"><strong>Grand Total</strong></td>
+                <td style="padding:10px;border:1px solid #ddd;text-align:right; color:#2E7D32;">₨${order.totalPrice.toFixed(2)}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
 
         <!-- Delivery Address -->
-        <h3 style="color:#2E7D32;">Delivery Address</h3>
-        <p>
-          ${order.shippingDetails.name}<br/>
+        <h3 style="color:#2E7D32; margin-top:30px;">📦 Shipping Details</h3>
+        <p style="line-height:1.6; color:#444;">
+          <strong>${order.shippingDetails.name}</strong><br/>
           ${order.shippingDetails.streetAddress}<br/>
           ${order.shippingDetails.district}, ${order.shippingDetails.city}, ${order.shippingDetails.province}<br/>
           Phone: ${order.shippingDetails.phone}<br/>
         </p>
 
+        <!-- Thank You Note -->
+        <div style="margin-top:30px; text-align:center;">
+          <p style="font-size:16px; color:#2E7D32;">
+            💚 Thank you for shopping with Natura Bliss!  
+            We hope you enjoy your purchase.  
+          </p>
+        </div>
+
         <!-- Footer -->
-        <p style="margin-top:30px;">If you have any questions, reply to this email or contact us at <strong>${ADMIN_EMAIL}</strong>.</p>
-        <p style="color:#777; font-size:12px;">&copy; ${new Date().getFullYear()} Natura Bliss</p>
+        <p style="margin-top:30px; text-align:center; color:#777; font-size:12px;">
+          If you have any questions, reply to this email or contact us at <strong>${ADMIN_EMAIL}</strong>.<br/>
+          &copy; ${new Date().getFullYear()} Natura Bliss 🌿
+        </p>
       </div>
     </div>
   </div>
   `;
 }
+
 
 
 // API route to handle order submission
