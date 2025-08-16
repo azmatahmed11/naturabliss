@@ -322,7 +322,7 @@ async function buildOrderHtml(order) {
   return `
     <div style="font-family:Arial,sans-serif;color:#2f4f2f;background-color:#f9fff9;padding:20px;max-width:800px;margin:auto;border-radius:8px;">
       ${logoBase64 ? `<div style="text-align:center;margin-bottom:20px;">
-        <img src="${logoBase64}" alt="Natura Bliss" style="max-width:160px;height:auto;">
+        <img src="${logoBase64}" alt="Natura Bliss" style="max-width:160px;height:auto;display:block;margin:0 auto;">
       </div>` : ''}
 
       <h2 style="color:#2e7d32;text-align:center;margin-bottom:10px;">🌿 New Order Received</h2>
@@ -356,17 +356,17 @@ async function buildOrderHtml(order) {
 
       <h3 style="color:#1b5e20;border-bottom:2px solid #c8e6c9;padding-bottom:4px;">Ordered Items</h3>
 
-      <!-- Responsive Wrapper -->
-      <div style="overflow-x:auto;width:100%;-webkit-overflow-scrolling:touch;">
-        <table style="border-collapse:collapse;width:100%;min-width:600px;margin-bottom:20px;">
+      <!-- Responsive Scroll Wrapper -->
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;">
+        <table style="border-collapse:collapse;width:100%;min-width:600px;margin-bottom:20px;table-layout:auto;">
           <thead style="background-color:#a5d6a7;color:#1b5e20">
             <tr>
-              <th style="padding:10px;border:1px solid #cfcfcf">SKU</th>
-              <th style="padding:10px;border:1px solid #cfcfcf">Product</th>
-              <th style="padding:10px;border:1px solid #cfcfcf">Qty</th>
-              <th style="padding:10px;border:1px solid #cfcfcf">Price</th>
-              <th style="padding:10px;border:1px solid #cfcfcf">Volume</th>
-              <th style="padding:10px;border:1px solid #cfcfcf">Subtotal</th>
+              <th style="padding:10px;border:1px solid #cfcfcf;text-align:left;">SKU</th>
+              <th style="padding:10px;border:1px solid #cfcfcf;text-align:left;">Product</th>
+              <th style="padding:10px;border:1px solid #cfcfcf;text-align:center;">Qty</th>
+              <th style="padding:10px;border:1px solid #cfcfcf;text-align:right;">Price</th>
+              <th style="padding:10px;border:1px solid #cfcfcf;text-align:center;">Volume</th>
+              <th style="padding:10px;border:1px solid #cfcfcf;text-align:right;">Subtotal</th>
             </tr>
           </thead>
           <tbody>${itemsRows}</tbody>
@@ -432,8 +432,10 @@ async function buildCustomerOrderHtml(order) {
 
         <!-- Ordered Items -->
         <h3 style="color:#2E7D32; margin-top:30px;">🛒 Your Order Summary</h3>
-        <div style="overflow-x:auto;">
-          <table style="border-collapse:collapse; width:100%; min-width:500px;">
+        
+        <!-- 🔥 Fix: scrollable table on mobile -->
+        <div style="width:100%; overflow-x:auto;">
+          <table style="border-collapse:collapse; min-width:600px; width:100%;">
             <thead>
               <tr style="background:#e6f5ea;">
                 <th style="padding:10px;border:1px solid #ddd">SKU</th>
@@ -491,6 +493,7 @@ async function buildCustomerOrderHtml(order) {
   </div>
   `;
 }
+
 
 
 
