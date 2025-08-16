@@ -357,35 +357,25 @@ async function buildOrderHtml(order) {
       <h3 style="color:#1b5e20;border-bottom:2px solid #c8e6c9;padding-bottom:4px;">Ordered Items</h3>
 
       <!-- Force scroll wrapper for mobile -->
-      <div style="width:100%;overflow-x:scroll;display:block;-webkit-overflow-scrolling:touch;">
-        <table style="border-collapse:collapse;width:700px;max-width:700px;margin-bottom:20px;table-layout:auto;">
-          <thead style="background-color:#a5d6a7;color:#1b5e20">
-            <tr>
-              <th style="padding:10px;border:1px solid #cfcfcf;text-align:left;">SKU</th>
-              <th style="padding:10px;border:1px solid #cfcfcf;text-align:left;">Product</th>
-              <th style="padding:10px;border:1px solid #cfcfcf;text-align:center;">Qty</th>
-              <th style="padding:10px;border:1px solid #cfcfcf;text-align:right;">Price</th>
-              <th style="padding:10px;border:1px solid #cfcfcf;text-align:center;">Volume</th>
-              <th style="padding:10px;border:1px solid #cfcfcf;text-align:right;">Subtotal</th>
-            </tr>
-          </thead>
-          <tbody>${itemsRows}</tbody>
-          <tfoot>
-            <tr style="background-color:#e8f5e9">
-              <td colspan="5" style="padding:10px;border:1px solid #cfcfcf;text-align:right"><strong>Items Total</strong></td>
-              <td style="padding:10px;border:1px solid #cfcfcf;text-align:right">₨${order.subtotal.toFixed(2)}</td>
-            </tr>
-            <tr style="background-color:#e8f5e9">
-              <td colspan="5" style="padding:10px;border:1px solid #cfcfcf;text-align:right"><strong>Delivery</strong></td>
-              <td style="padding:10px;border:1px solid #cfcfcf;text-align:right">${order.deliveryCharge === 0 ? 'Free' : '₨' + order.deliveryCharge.toFixed(2)}</td>
-            </tr>
-            <tr style="background-color:#c8e6c9">
-              <td colspan="5" style="padding:10px;border:1px solid #cfcfcf;text-align:right"><strong>Grand Total</strong></td>
-              <td style="padding:10px;border:1px solid #cfcfcf;text-align:right">₨${order.totalPrice.toFixed(2)}</td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
+     <!-- Force scroll wrapper for mobile -->
+<div style="width:100%;overflow-x:auto;display:block;-webkit-overflow-scrolling:touch;">
+  <table style="border-collapse:collapse;min-width:600px;width:100%;margin-bottom:20px;table-layout:auto;">
+    <thead style="background-color:#a5d6a7;color:#1b5e20">
+      <tr>
+        <th style="padding:10px;border:1px solid #cfcfcf;text-align:left;">SKU</th>
+        <th style="padding:10px;border:1px solid #cfcfcf;text-align:left;">Product</th>
+        <th style="padding:10px;border:1px solid #cfcfcf;text-align:center;">Qty</th>
+        <th style="padding:10px;border:1px solid #cfcfcf;text-align:right;">Price</th>
+        <th style="padding:10px;border:1px solid #cfcfcf;text-align:center;">Volume</th>
+        <th style="padding:10px;border:1px solid #cfcfcf;text-align:right;">Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- your rows here -->
+    </tbody>
+  </table>
+</div>
+
 
       <h3 style="color:#1b5e20;border-bottom:2px solid #c8e6c9;padding-bottom:4px;">Payment Method</h3>
       <p style="font-size:14px;">${order.paymentMethod}</p>
