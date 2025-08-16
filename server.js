@@ -308,13 +308,13 @@ async function buildOrderHtml(order) {
     const product = PRODUCTS.find(p => p.id === it.id);
     const bgColor = i % 2 === 0 ? '#f6fff6' : '#ffffff';
     return `
-      <tr style="background-color:${bgColor};font-size:14px;">
-        <td style="padding:10px;border:1px solid #cfcfcf">${it.id}</td>
-        <td style="padding:10px;border:1px solid #cfcfcf">${it.name || 'N/A'}</td>
-        <td style="padding:10px;border:1px solid #cfcfcf;text-align:center">${it.qty}</td>
-        <td style="padding:10px;border:1px solid #cfcfcf;text-align:right">₨${it.price?.toFixed(2) || '0.00'}</td>
-        <td style="padding:10px;border:1px solid #cfcfcf;text-align:center">${product?.volume || '-'}</td>
-        <td style="padding:10px;border:1px solid #cfcfcf;text-align:right">₨${(it.price * it.qty).toFixed(2)}</td>
+      <tr style="background-color:${bgColor};font-size:12px;">
+        <td style="padding:6px;border:1px solid #cfcfcf;word-wrap:break-word;">${it.id}</td>
+        <td style="padding:6px;border:1px solid #cfcfcf;word-wrap:break-word;">${it.name || 'N/A'}</td>
+        <td style="padding:6px;border:1px solid #cfcfcf;text-align:center;">${it.qty}</td>
+        <td style="padding:6px;border:1px solid #cfcfcf;text-align:right;">₨${it.price?.toFixed(2) || '0.00'}</td>
+        <td style="padding:6px;border:1px solid #cfcfcf;text-align:center;">${product?.volume || '-'}</td>
+        <td style="padding:6px;border:1px solid #cfcfcf;text-align:right;">₨${(it.price * it.qty).toFixed(2)}</td>
       </tr>
     `;
   }).join('');
@@ -326,12 +326,12 @@ async function buildOrderHtml(order) {
       </div>` : ''}
 
       <h2 style="color:#2e7d32;text-align:center;margin-bottom:10px;">🌿 New Order Received</h2>
-      <p style="text-align:center;font-size:14px;color:#666;margin-top:0;">
+      <p style="text-align:center;font-size:13px;color:#666;margin-top:0;">
         ${new Date(order.orderDate).toLocaleString()}
       </p>
 
       <h3 style="color:#1b5e20;border-bottom:2px solid #c8e6c9;padding-bottom:4px;">Customer Details</h3>
-      <p style="font-size:14px;line-height:1.5;">
+      <p style="font-size:13px;line-height:1.5;">
         <strong>Name:</strong> ${order.personalDetails.name}<br/>
         <strong>Email:</strong> ${order.personalDetails.email}<br/>
         <strong>Phone:</strong> ${order.personalDetails.phone}<br/>
@@ -343,7 +343,7 @@ async function buildOrderHtml(order) {
       </p>
 
       <h3 style="color:#1b5e20;border-bottom:2px solid #c8e6c9;padding-bottom:4px;">Shipping Details</h3>
-      <p style="font-size:14px;line-height:1.5;">
+      <p style="font-size:13px;line-height:1.5;">
         <strong>Name:</strong> ${order.shippingDetails.name}<br/>
         <strong>Email:</strong> ${order.shippingDetails.email}<br/>
         <strong>Phone:</strong> ${order.shippingDetails.phone}<br/>
@@ -356,36 +356,45 @@ async function buildOrderHtml(order) {
 
       <h3 style="color:#1b5e20;border-bottom:2px solid #c8e6c9;padding-bottom:4px;">Ordered Items</h3>
 
-      <!-- Force scroll wrapper for mobile -->
-     <!-- Force scroll wrapper for mobile -->
-<div style="width:100%;overflow-x:auto;display:block;-webkit-overflow-scrolling:touch;">
-  <table style="border-collapse:collapse;min-width:600px;width:100%;margin-bottom:20px;table-layout:auto;">
-    <thead style="background-color:#a5d6a7;color:#1b5e20">
-      <tr>
-        <th style="padding:10px;border:1px solid #cfcfcf;text-align:left;">SKU</th>
-        <th style="padding:10px;border:1px solid #cfcfcf;text-align:left;">Product</th>
-        <th style="padding:10px;border:1px solid #cfcfcf;text-align:center;">Qty</th>
-        <th style="padding:10px;border:1px solid #cfcfcf;text-align:right;">Price</th>
-        <th style="padding:10px;border:1px solid #cfcfcf;text-align:center;">Volume</th>
-        <th style="padding:10px;border:1px solid #cfcfcf;text-align:right;">Subtotal</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- your rows here -->
-    </tbody>
-  </table>
-</div>
-
+      <!-- Responsive table -->
+      <table style="border-collapse:collapse;width:100%;margin-bottom:20px;table-layout:fixed;">
+        <thead style="background-color:#a5d6a7;color:#1b5e20">
+          <tr>
+            <th style="padding:6px;border:1px solid #cfcfcf;text-align:left;font-size:12px;">SKU</th>
+            <th style="padding:6px;border:1px solid #cfcfcf;text-align:left;font-size:12px;">Product</th>
+            <th style="padding:6px;border:1px solid #cfcfcf;text-align:center;font-size:12px;">Qty</th>
+            <th style="padding:6px;border:1px solid #cfcfcf;text-align:right;font-size:12px;">Price</th>
+            <th style="padding:6px;border:1px solid #cfcfcf;text-align:center;font-size:12px;">Volume</th>
+            <th style="padding:6px;border:1px solid #cfcfcf;text-align:right;font-size:12px;">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>${itemsRows}</tbody>
+        <tfoot>
+          <tr style="background-color:#e8f5e9;font-size:12px;">
+            <td colspan="5" style="padding:6px;border:1px solid #cfcfcf;text-align:right"><strong>Items Total</strong></td>
+            <td style="padding:6px;border:1px solid #cfcfcf;text-align:right">₨${order.subtotal.toFixed(2)}</td>
+          </tr>
+          <tr style="background-color:#e8f5e9;font-size:12px;">
+            <td colspan="5" style="padding:6px;border:1px solid #cfcfcf;text-align:right"><strong>Delivery</strong></td>
+            <td style="padding:6px;border:1px solid #cfcfcf;text-align:right">${order.deliveryCharge === 0 ? 'Free' : '₨' + order.deliveryCharge.toFixed(2)}</td>
+          </tr>
+          <tr style="background-color:#c8e6c9;font-size:12px;">
+            <td colspan="5" style="padding:6px;border:1px solid #cfcfcf;text-align:right"><strong>Grand Total</strong></td>
+            <td style="padding:6px;border:1px solid #cfcfcf;text-align:right">₨${order.totalPrice.toFixed(2)}</td>
+          </tr>
+        </tfoot>
+      </table>
 
       <h3 style="color:#1b5e20;border-bottom:2px solid #c8e6c9;padding-bottom:4px;">Payment Method</h3>
-      <p style="font-size:14px;">${order.paymentMethod}</p>
+      <p style="font-size:13px;">${order.paymentMethod}</p>
 
-      <p style="text-align:center;margin-top:30px;color:#388e3c;font-style:italic;">
+      <p style="text-align:center;margin-top:30px;color:#388e3c;font-style:italic;font-size:13px;">
         Thank you for choosing Natura Bliss 🌿
       </p>
     </div>
   `;
 }
+
 
 
 
