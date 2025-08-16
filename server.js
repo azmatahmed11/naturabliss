@@ -9,6 +9,15 @@ const app = express();
 // Serve static frontend files if any (optional)
 app.use(express.static(path.join(__dirname, 'public')));
 
+const fs = require('fs');
+const path = require('path');
+
+// Load logo as base64
+const logoPath = path.join(__dirname, 'public', 'logomain.jpg'); // updated filename
+const logoBase64 = fs.existsSync(logoPath)
+  ? `data:image/jpeg;base64,${fs.readFileSync(logoPath).toString('base64')}`
+  : '';
+
 // Middleware
 app.use(express.json());
 app.use(cors({
@@ -33,217 +42,247 @@ const transporter = nodemailer.createTransport({
 });
 
 // Your products list (replace with your real products or DB)
-const PRODUCTS = [
-      {
-        id: 's1',
-        category: 'Soaps',
-        name: 'Lavender Oat Soap',
-        rating: 4.6,
-        price: 24.99,
-        origPrice: 32.00,
-        images: [
-          'im1.jpeg',
-          'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=800&q=60'
-        ],
-        desc: 'Gentle lavender & oats to calm and exfoliate. Handmade with olive oil & shea butter.'
-      },
-      {
-        id: 's2',
-        category: 'Soaps',
-        name: 'Charcoal Detox Soap',
-        rating: 4.3,
-        price: 26.99,
-        origPrice: 34.00,
-        images: [
-          'https://images.unsplash.com/photo-1536305030012-7f9999d8b0a6?auto=format&fit=crop&w=800&q=60',
-          'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=800&q=60'
-        ],
-        desc: 'Activated charcoal & sea clay to detoxify and refine pores.'
-      },
-      {
-        id: 'sh1',
-        category: 'Shampoos',
-        name: 'Herbal Mint Shampoo',
-        rating: 4.4,
-        price: 32.99,
-        origPrice: 42.00,
-        images: [
-          'https://images.unsplash.com/photo-1516685018646-5491f21a7e6c?auto=format&fit=crop&w=800&q=60',
-          'https://images.unsplash.com/photo-1526406915899-3c0b7f6bd8b4?auto=format&fit=crop&w=800&q=60'
-        ],
-        desc: 'Refreshing mint & tea tree shampoo for a clean, balanced scalp.'
-      },
-      {
-        id: 'sh2',
-        category: 'Shampoos',
-        name: 'Coconut Argan Conditioner',
-        rating: 4.7,
-        price: 35.99,
-        origPrice: 44.00,
-        images: [
-          'https://images.unsplash.com/photo-1505678261036-a3fcc5e884ee?auto=format&fit=crop&w=800&q=60',
-          'https://images.unsplash.com/photo-1522337360788-0c1e9d05df3b?auto=format&fit=crop&w=800&q=60'
-        ],
-        desc: 'Rich conditioning with coconut & argan oil for smooth, shiny hair.'
-      },
+  const PRODUCTS = [
+    {
+  id: 'soap1',
+  category: 'Soaps',
+  name: 'Whitening Rice Soap',
+  rating: 4.6,
+  price: 599.00,
+  origPrice: 800.00,
+  volume: '100g',
+  images: [
+    'im1.jpeg',
+    'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=800&q=60'
+  ],
+  desc: `
+<h3 class="font-semibold text-lg">Benefits:</h3>
+<ul class="list-disc pl-5">
+  <li>Skin glowing</li>
+  <li>Skin lightening & tightening</li>
+  <li>Promotes healthy & glowing complexion</li>
+  <li>Reduces dark spots, melasma</li>
+</ul>
 
- {
-        id: 'o1',
-        category: 'Oils',
-        name: 'onion oil',
-        rating: 4.4,
-        price: 32.99,
-        origPrice: 42.00,
-        images: [
-          'https://images.unsplash.com/photo-1516685018646-5491f21a7e6c?auto=format&fit=crop&w=800&q=60',
-          'https://images.unsplash.com/photo-1526406915899-3c0b7f6bd8b4?auto=format&fit=crop&w=800&q=60'
-        ],
-        desc: 'Refreshing mint & tea tree shampoo for a clean, balanced scalp.'
-      },
+<h3 class="font-semibold text-lg">Ingredients:</h3>
+<p>Rice powder, Amla powder, Turmeric, Coffee, Kaolin clay, Pink clay, Aloe vera gel, Niacinamide V-B3, Soap base, Coconut oil, Mulathi, Multani matti, Olive oil, Neem oil, Tea tree oil, Castor oil, Glycerine, Distilled water, Vitamin E oil, Fragrance oil</p>
 
-       {
-        id: 'c1',
-        category: 'Creams',
-        name: 'Herbal cream',
-        rating: 4.4,
-        price: 32.99,
-        origPrice: 42.00,
-        images: [
-          'https://images.unsplash.com/photo-1516685018646-5491f21a7e6c?auto=format&fit=crop&w=800&q=60',
-          'https://images.unsplash.com/photo-1526406915899-3c0b7f6bd8b4?auto=format&fit=crop&w=800&q=60'
-        ],
-        desc: 'Refreshing mint & tea tree shampoo for a clean, balanced scalp.'
-      },
-       {
-        id: 'c2',
-        category: 'Creams',
-        name: 'Herbal crearm',
-        rating: 4.4,
-        price: 32.99,
-        origPrice: 42.00,
-        images: [
-          'https://images.unsplash.com/photo-1516685018646-5491f21a7e6c?auto=format&fit=crop&w=800&q=60',
-          'https://images.unsplash.com/photo-1526406915899-3c0b7f6bd8b4?auto=format&fit=crop&w=800&q=60'
-        ],
-        desc: 'Refreshing mint & tea tree shampoo for a clean, balanced scalp.'
-      },
- {
-        id: 'c3',
-        category: 'Creams',
-        name: 'Herbaddl cream',
-        rating: 4.4,
-        price: 32.99,
-        origPrice: 42.00,
-        images: [
-          'https://images.unsplash.com/photo-1516685018646-5491f21a7e6c?auto=format&fit=crop&w=800&q=60',
-          'https://images.unsplash.com/photo-1526406915899-3c0b7f6bd8b4?auto=format&fit=crop&w=800&q=60'
-        ],
-        desc: 'Refreshing mint & tea tree shampoo for a clean, balanced scalp.'
-      },
-       {
-        id: 'c4',
-        category: 'Creams',
-        name: 'Herbal creeeeeam',
-        rating: 4.4,
-        price: 32.99,
-        origPrice: 42.00,
-        images: [
-          'https://images.unsplash.com/photo-1516685018646-5491f21a7e6c?auto=format&fit=crop&w=800&q=60',
-          'https://images.unsplash.com/photo-1526406915899-3c0b7f6bd8b4?auto=format&fit=crop&w=800&q=60'
-        ],
-        desc: 'Refreshing mint & tea tree shampoo for a clean, balanced scalp.'
-      },
-       {
-        id: 'c5',
-        category: 'Creams',
-        name: 'Herbal crearrm',
-        rating: 4.4,
-        price: 32.99,
-        origPrice: 42.00,
-        images: [
-          'https://images.unsplash.com/photo-1516685018646-5491f21a7e6c?auto=format&fit=crop&w=800&q=60',
-          'https://images.unsplash.com/photo-1526406915899-3c0b7f6bd8b4?auto=format&fit=crop&w=800&q=60'
-        ],
-        desc: 'Refreshing mint & tea tree shampoo for a clean, balanced scalp.'
-      },
-       {
-        id: 'c6',
-        category: 'Creams',
-        name: 'Herbal crerrram',
-        rating: 4.4,
-        price: 32.99,
-        origPrice: 42.00,
-        images: [
-          'https://images.unsplash.com/photo-1516685018646-5491f21a7e6c?auto=format&fit=crop&w=800&q=60',
-          'https://images.unsplash.com/photo-1526406915899-3c0b7f6bd8b4?auto=format&fit=crop&w=800&q=60'
-        ],
-        desc: 'Refreshing mint & tea tree shampoo for a clean, balanced scalp.'
-      },
-       {
-        id: 'c7',
-        category: 'Creams',
-        name: 'Herbal creeeam',
-        rating: 4.4,
-        price: 32.99,
-        origPrice: 42.00,
-        images: [
-          'https://images.unsplash.com/photo-1516685018646-5491f21a7e6c?auto=format&fit=crop&w=800&q=60',
-          'https://images.unsplash.com/photo-1526406915899-3c0b7f6bd8b4?auto=format&fit=crop&w=800&q=60'
-        ],
-        desc: 'Refreshing mint & tea tree shampoo for a clean, balanced scalp.'
-      },
-       {
-        id: 'c8',
-        category: 'Creams',
-        name: 'Herbal crsseam',
-        rating: 4.4,
-        price: 32.99,
-        origPrice: 42.00,
-        images: [
-          'https://images.unsplash.com/photo-1516685018646-5491f21a7e6c?auto=format&fit=crop&w=800&q=60',
-          'https://images.unsplash.com/photo-1526406915899-3c0b7f6bd8b4?auto=format&fit=crop&w=800&q=60'
-        ],
-        desc: 'Refreshing mint & tea tree shampoo for a clean, balanced scalp.'
-      },
-       {
-        id: 'c9',
-        category: 'Creams',
-        name: 'Herbal crggeam',
-        rating: 4.4,
-        price: 32.99,
-        origPrice: 42.00,
-        images: [
-          'https://images.unsplash.com/photo-1516685018646-5491f21a7e6c?auto=format&fit=crop&w=800&q=60',
-          'https://images.unsplash.com/photo-1526406915899-3c0b7f6bd8b4?auto=format&fit=crop&w=800&q=60'
-        ],
-        desc: 'Refreshing mint & tea tree shampoo for a clean, balanced scalp.'
-      },
-       {
-        id: 'c10',
-        category: 'Creams',
-        name: 'Herbal creaiim',
-        rating: 4.4,
-        price: 32.99,
-        origPrice: 42.00,
-        images: [
-          'https://images.unsplash.com/photo-1516685018646-5491f21a7e6c?auto=format&fit=crop&w=800&q=60',
-          'https://images.unsplash.com/photo-1526406915899-3c0b7f6bd8b4?auto=format&fit=crop&w=800&q=60'
-        ],
-        desc: 'Refreshing mint & tea tree shampoo for a clean, balanced scalp.'
-      },
-       {
-        id: 'c11',
-        category: 'Creams',
-        name: 'Herbal creaoom',
-        rating: 4.4,
-        price: 32.99,
-        origPrice: 42.00,
-        images: [
-          'https://images.unsplash.com/photo-1516685018646-5491f21a7e6c?auto=format&fit=crop&w=800&q=60',
-          'https://images.unsplash.com/photo-1526406915899-3c0b7f6bd8b4?auto=format&fit=crop&w=800&q=60'
-        ],
-        desc: 'Refreshing mint & tea tree shampoo for a clean, balanced scalp.'
-      }
+<h3 class="font-semibold text-lg">Volume:</h3>
+<p>100g</p>
+`
+},
+
+
+{
+  id: 'soap2',
+  category: 'Soaps',
+  name: 'Charcoal Soap',
+  rating: 4.3,
+  price: 599.00,
+  origPrice: 800.00,
+  volume: '100g',
+  images: [
+    'https://images.unsplash.com/photo-1536305030012-7f9999d8b0a6?auto=format&fit=crop&w=800&q=60',
+    'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=800&q=60'
+  ],
+  desc: `
+<h3 class="font-semibold text-lg">Benefits:</h3>
+<ul class="list-disc pl-5">
+  <li>Helps with pigmentation</li>
+  <li>Oily skin</li>
+  <li>Dark spots</li>
+  <li>White & black heads</li>
+  <li>Deep cleaning</li>
+  <li>Pimples</li>
+</ul>
+
+<h3 class="font-semibold text-lg">Ingredients:</h3>
+<p>Charcoal powder, Amla powder, Kaolin clay, Pink clay, Aloe vera gel, Niacinamide V-B3, Soap base, Mulathi, Multani matti, Coconut oil, Olive oil, Neem oil, Tea tree oil, Castor oil, Glycerine, Distilled water, Vitamin E oil, Fragrance oil</p>
+
+<h3 class="font-semibold text-lg">Volume:</h3>
+<p>100g</p>
+`
+},
+
+
+{
+  id: 'soap3',
+  category: 'Soaps',
+  name: 'Neem Soap',
+  rating: 4.3,
+  price: 599.00,
+  origPrice: 800.00,
+  volume: '100g',
+  images: [
+    'https://images.unsplash.com/photo-1536305030012-7f9999d8b0a6?auto=format&fit=crop&w=800&q=60',
+    'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=800&q=60'
+  ],
+  desc: `
+<h3 class="font-semibold text-lg">Benefits:</h3>
+<ul class="list-disc pl-5">
+  <li>Fights acne & breakouts naturally</li>
+  <li>Brightens & evens skin tone</li>
+  <li>Helps prevent pimples & breakouts</li>
+</ul>
+
+<h3 class="font-semibold text-lg">Ingredients:</h3>
+<p>Neem powder, Amla powder, Kaolin clay, Pink clay, Aloe vera gel, Niacinamide V-B3, Mulathi, Multani matti, Soap base, Coconut oil, Olive oil, Neem oil, Tea tree oil, Castor oil, Glycerine, Distilled water, Vitamin E oil, Fragrance oil</p>
+
+<h3 class="font-semibold text-lg">Volume:</h3>
+<p>100g</p>
+`
+},
+
+
+     
+{
+  id: 'Shampoo1',
+  category: 'Shampoos',
+  name: 'Herbal Shampoo',
+  rating: 4.4,
+  price: 499.00,
+  origPrice: 700.00,
+  volume: '100ml',
+  images: [
+    'https://images.unsplash.com/photo-1516685018646-5491f21a7e6?auto=format&fit=crop&w=800&q=60',
+    'https://images.unsplash.com/photo-1526406915899-3c0b7f6bd8b4?auto=format&fit=crop&w=800&q=60'
+  ],
+  desc: `
+<h3 class="font-semibold text-lg">Description:</h3>
+<p>This sulfate-free shampoo features a premium anti-dandruff formula designed to remove dandruff and flakes while promoting strong, shiny hair.</p>
+
+<h3 class="font-semibold text-lg">Ingredients:</h3>
+<p>Amla, Retha, Shikakai, Rosemary, Flaxseed, Bhringraj, Neem, Rice, Sulfate-free shampoo base, CMC gum, Oil Control, Coconut oil, Olive oil, Almond oil, Coco-betain, Tea-tree oil, Lemon oil, Vitamin E, Aloe vera gel, B-22, Preservatives, Organic Fragrance</p>
+
+<h3 class="font-semibold text-lg">Volume:</h3>
+<p>100ml – 200ml</p>
+`
+},
+
+    
+{
+  id: 'Shampoo2',
+  category: 'Shampoos',
+  name: 'Herbal Shampoo',
+  rating: 4.4,
+  price: 649.00,
+  origPrice: 850.00,
+  volume: '150ml',
+  images: [
+    'https://images.unsplash.com/photo-1516685018646-5491f21a7e6?auto=format&fit=crop&w=800&q=60',
+    'https://images.unsplash.com/photo-1526406915899-3c0b7f6bd8b4?auto=format&fit=crop&w=800&q=60'
+  ],
+  desc: `
+<h3 class="font-semibold text-lg">Description:</h3>
+<p>This sulfate-free shampoo features a premium anti-dandruff formula designed to remove dandruff and flakes while promoting strong, shiny hair.</p>
+
+<h3 class="font-semibold text-lg">Ingredients:</h3>
+<p>Amla, Retha, Shikakai, Rosemary, Flaxseed, Bhringraj, Neem, Rice, Sulfate-free shampoo base, CMC gum, Oil Control, Coconut oil, Olive oil, Almond oil, Coco-betain, Tea-tree oil, Lemon oil, Vitamin E, Aloe vera gel, B-22, Preservatives, Organic Fragrance</p>
+
+<h3 class="font-semibold text-lg">Volume:</h3>
+<p>100ml – 200ml</p>
+`
+},
+
+    
+  {
+  id: 'Shampoo3',
+  category: 'Shampoos',
+  name: 'Herbal Shampoo',
+  rating: 4.4,
+  price: 849.00,
+  origPrice: 1050.00,
+  volume: '250ml',
+  images: [
+    'https://images.unsplash.com/photo-1516685018646-5491f21a7e6?auto=format&fit=crop&w=800&q=60',
+    'https://images.unsplash.com/photo-1526406915899-3c0b7f6bd8b4?auto=format&fit=crop&w=800&q=60'
+  ],
+  desc: `
+<h3 class="font-semibold text-lg">Description:</h3>
+<p>This sulfate-free shampoo features a premium anti-dandruff formula designed to remove dandruff and flakes while promoting strong, shiny hair.</p>
+
+<h3 class="font-semibold text-lg">Ingredients:</h3>
+<p>Amla, Retha, Shikakai, Rosemary, Flaxseed, Bhringraj, Neem, Rice, Sulfate-free shampoo base, CMC gum, Oil Control, Coconut oil, Olive oil, Almond oil, Coco-betain, Tea-tree oil, Lemon oil, Vitamin E, Aloe vera gel, B-22, Preservatives, Organic Fragrance</p>
+
+<h3 class="font-semibold text-lg">Volume:</h3>
+<p>100ml – 200ml</p>
+`
+},
+ 
+
+
+{
+  id: 'oil1',
+  category: 'Oils',
+  name: 'Onion Herbal Oil',
+  rating: 4.4,
+  price: 599.00,
+  origPrice: 800.00,
+  volume: '100ml',
+  images: [
+    'https://images.unsplash.com/photo-1516685018646-5491f21a7e6?auto=format&fit=crop&w=800&q=60',
+    'https://images.unsplash.com/photo-1526406915899-3c0b7f6bd8b4?auto=format&fit=crop&w=800&q=60'
+  ],
+  desc: `
+<h3 class="font-semibold text-lg">Description:</h3>
+<p>Refreshing herbal oil designed to nourish scalp and promote hair growth.</p>
+
+<h3 class="font-semibold text-lg">Ingredients:</h3>
+<p>Coconut oil, Olive oil, Onion extract, Tea-tree oil, Aloe vera, Vitamin E oil, Essential oils, Preservatives</p>
+
+<h3 class="font-semibold text-lg">Volume:</h3>
+<p>100ml – 200ml</p>
+`
+},
+
+      {
+  id: 'oil2',
+  category: 'Oils',
+  name: 'Onion Herbal Oil',
+  rating: 4.4,
+  price: 799.00,
+  origPrice: 1000.00,
+  volume: '100ml',
+  images: [
+    'https://images.unsplash.com/photo-1516685018646-5491f21a7e6?auto=format&fit=crop&w=800&q=60',
+    'https://images.unsplash.com/photo-1526406915899-3c0b7f6bd8b4?auto=format&fit=crop&w=800&q=60'
+  ],
+  desc: `
+<h3 class="font-semibold text-lg">Description:</h3>
+<p>Refreshing herbal oil designed to nourish scalp and promote hair growth.</p>
+
+<h3 class="font-semibold text-lg">Ingredients:</h3>
+<p>Coconut oil, Olive oil, Onion extract, Tea-tree oil, Aloe vera, Vitamin E oil, Essential oils, Preservatives</p>
+
+<h3 class="font-semibold text-lg">Volume:</h3>
+<p>100ml – 200ml</p>
+`
+},
+
+
+   {
+  id: 'cream1',
+  category: 'Creams',
+  name: '4in1 Night Beauty Cream',
+  rating: 4.4,
+  price: 899.00,
+  origPrice: 1200.00,
+  volume: '50g – 100g',
+  images: [
+    'https://images.unsplash.com/photo-1516685018646-5491f21a7e6c?auto=format&fit=crop&w=800&q=60',
+    'https://images.unsplash.com/photo-1526406915899-3c0b7f6bd8b4?auto=format&fit=crop&w=800&q=60'
+  ],
+  desc: `
+<h3 class="font-semibold text-lg">Description:</h3>
+<p>✨ Advanced Glow Night Cream – Korean Inspired Formula. Enriched with Niacinamide, L-Glutathione, Alpha Arbutin, and Hyaluronic Acid, this powerful blend deeply nourishes, brightens, and hydrates the skin while reducing dark spots and pigmentation. Shea Butter & Coconut Oil restore softness, while Tea Tree Oil purifies and calms. With regular use, skin appears visibly smoother, more even-toned, and naturally radiant.</p>
+
+<h3 class="font-semibold text-lg">Ingredients:</h3>
+<p>Olivem 1000, Shea butter, Coconut oil, Cetyl alcohol, Vitamin E oil, Kojic acid, Distilled water, Niacinamide, Hyaluronic acid, Alpha Arbutin, Glutathione, Tea-tree oil, Preservatives, Fragrance oil</p>
+
+<h3 class="font-semibold text-lg">Volume:</h3>
+<p>50g – 100g (weight-based)</p>
+`
+}
 
 
 
@@ -263,74 +302,168 @@ function enrichCartItems(cart) {
 }
 
 // Build the order HTML email content
+// Build the order HTML email content
 async function buildOrderHtml(order) {
-  const itemsRows = order.cart.map(it => `
-    <tr>
-      <td style="padding:6px;border:1px solid #ddd">${it.id}</td>
-      <td style="padding:6px;border:1px solid #ddd">${it.name || 'N/A'}</td>
-      <td style="padding:6px;border:1px solid #ddd;text-align:right">${it.qty}</td>
-      <td style="padding:6px;border:1px solid #ddd;text-align:right">₨${it.price?.toFixed(2) || '0.00'}</td>
-      <td style="padding:6px;border:1px solid #ddd;text-align:right">₨${(it.price * it.qty).toFixed(2)}</td>
-    </tr>
-  `).join('');
+  const itemsRows = order.cart.map((it, i) => {
+    const product = PRODUCTS.find(p => p.id === it.id);
+    const bgColor = i % 2 === 0 ? '#f6fff6' : '#ffffff'; // alternating row colors
+    return `
+      <tr style="background-color:${bgColor};">
+        <td style="padding:10px;border:1px solid #cfcfcf">${it.id}</td>
+        <td style="padding:10px;border:1px solid #cfcfcf">${it.name || 'N/A'}</td>
+        <td style="padding:10px;border:1px solid #cfcfcf;text-align:center">${it.qty}</td>
+        <td style="padding:10px;border:1px solid #cfcfcf;text-align:right">₨${it.price?.toFixed(2) || '0.00'}</td>
+        <td style="padding:10px;border:1px solid #cfcfcf;text-align:center">${product?.volume || '-'}</td>
+        <td style="padding:10px;border:1px solid #cfcfcf;text-align:right">₨${(it.price * it.qty).toFixed(2)}</td>
+      </tr>
+    `;
+  }).join('');
 
   return `
-    <h2>New Order — ${new Date(order.orderDate).toLocaleString()}</h2>
-    
-    <h3>Customer Details</h3>
-    <p>
-      <strong>Name:</strong> ${order.personalDetails.name}<br/>
-      <strong>Email:</strong> ${order.personalDetails.email}<br/>
-      <strong>Phone:</strong> ${order.personalDetails.phone}<br/>
-      <strong>Address:</strong> ${order.personalDetails.streetAddress}<br/>
-      <strong>District:</strong> ${order.personalDetails.district}<br/>
-      <strong>City:</strong> ${order.personalDetails.city}<br/>
-      <strong>Province:</strong> ${order.personalDetails.province}<br/>
-      ${order.personalDetails.additionalDetails ? `<strong>Additional Details:</strong> ${order.personalDetails.additionalDetails}<br/>` : ''}
-    </p>
+    <div style="font-family:Arial,sans-serif;color:#2f4f2f;background-color:#f0fff0;padding:20px">
+      ${logoBase64 ? `<div style="text-align:center;margin-bottom:20px;">
+        <img src="${logoBase64}" alt="Natura Bliss" style="max-width:180px;">
+      </div>` : ''}
 
-    <h3>Shipping Details</h3>
-    <p>
-      <strong>Name:</strong> ${order.shippingDetails.name}<br/>
-      <strong>Email:</strong> ${order.shippingDetails.email}<br/>
-      <strong>Phone:</strong> ${order.shippingDetails.phone}<br/>
-      <strong>Address:</strong> ${order.shippingDetails.streetAddress}<br/>
-      <strong>District:</strong> ${order.shippingDetails.district}<br/>
-      <strong>City:</strong> ${order.shippingDetails.city}<br/>
-      <strong>Province:</strong> ${order.shippingDetails.province}<br/>
-      ${order.shippingDetails.additionalDetails ? `<strong>Additional Details:</strong> ${order.shippingDetails.additionalDetails}<br/>` : ''}
-    </p>
+      <h2 style="color:#2e7d32;text-align:center;">🌿 New Order Received — ${new Date(order.orderDate).toLocaleString()}</h2>
 
-    <h3>Ordered Items</h3>
-    <table style="border-collapse:collapse;width:100%;max-width:700px">
-      <thead>
-        <tr>
-          <th style="padding:6px;border:1px solid #ddd">SKU</th>
-          <th style="padding:6px;border:1px solid #ddd">Product</th>
-          <th style="padding:6px;border:1px solid #ddd">Qty</th>
-          <th style="padding:6px;border:1px solid #ddd">Price</th>
-          <th style="padding:6px;border:1px solid #ddd">Subtotal</th>
-        </tr>
-      </thead>
-      <tbody>${itemsRows}</tbody>
-      <tfoot>
-        <tr>
-          <td colspan="4" style="padding:6px;border:1px solid #ddd;text-align:right"><strong>Items Total</strong></td>
-          <td style="padding:6px;border:1px solid #ddd;text-align:right">₨${order.subtotal.toFixed(2)}</td>
-        </tr>
-        <tr>
-          <td colspan="4" style="padding:6px;border:1px solid #ddd;text-align:right"><strong>Delivery</strong></td>
-          <td style="padding:6px;border:1px solid #ddd;text-align:right">${order.deliveryCharge === 0 ? 'Free' : '₨' + order.deliveryCharge.toFixed(2)}</td>
-        </tr>
-        <tr>
-          <td colspan="4" style="padding:6px;border:1px solid #ddd;text-align:right"><strong>Grand Total</strong></td>
-          <td style="padding:6px;border:1px solid #ddd;text-align:right">₨${order.totalPrice.toFixed(2)}</td>
-        </tr>
-      </tfoot>
-    </table>
+      <h3 style="color:#1b5e20;">Customer Details</h3>
+      <p>
+        <strong>Name:</strong> ${order.personalDetails.name}<br/>
+        <strong>Email:</strong> ${order.personalDetails.email}<br/>
+        <strong>Phone:</strong> ${order.personalDetails.phone}<br/>
+        <strong>Address:</strong> ${order.personalDetails.streetAddress}<br/>
+        <strong>District:</strong> ${order.personalDetails.district}<br/>
+        <strong>City:</strong> ${order.personalDetails.city}<br/>
+        <strong>Province:</strong> ${order.personalDetails.province}<br/>
+        ${order.personalDetails.additionalDetails ? `<strong>Additional Details:</strong> ${order.personalDetails.additionalDetails}<br/>` : ''}
+      </p>
 
-    <h3>Payment Method</h3>
-    <p>${order.paymentMethod}</p>
+      <h3 style="color:#1b5e20;">Shipping Details</h3>
+      <p>
+        <strong>Name:</strong> ${order.shippingDetails.name}<br/>
+        <strong>Email:</strong> ${order.shippingDetails.email}<br/>
+        <strong>Phone:</strong> ${order.shippingDetails.phone}<br/>
+        <strong>Address:</strong> ${order.shippingDetails.streetAddress}<br/>
+        <strong>District:</strong> ${order.shippingDetails.district}<br/>
+        <strong>City:</strong> ${order.shippingDetails.city}<br/>
+        <strong>Province:</strong> ${order.shippingDetails.province}<br/>
+        ${order.shippingDetails.additionalDetails ? `<strong>Additional Details:</strong> ${order.shippingDetails.additionalDetails}<br/>` : ''}
+      </p>
+
+      <h3 style="color:#1b5e20;">Ordered Items</h3>
+      <table style="border-collapse:collapse;width:100%;max-width:700px;margin-bottom:20px">
+        <thead style="background-color:#a5d6a7;color:#1b5e20">
+          <tr>
+            <th style="padding:10px;border:1px solid #cfcfcf">SKU</th>
+            <th style="padding:10px;border:1px solid #cfcfcf">Product</th>
+            <th style="padding:10px;border:1px solid #cfcfcf">Qty</th>
+            <th style="padding:10px;border:1px solid #cfcfcf">Price</th>
+            <th style="padding:10px;border:1px solid #cfcfcf">Volume</th>
+            <th style="padding:10px;border:1px solid #cfcfcf">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>${itemsRows}</tbody>
+        <tfoot>
+          <tr style="background-color:#e8f5e9">
+            <td colspan="5" style="padding:10px;border:1px solid #cfcfcf;text-align:right"><strong>Items Total</strong></td>
+            <td style="padding:10px;border:1px solid #cfcfcf;text-align:right">₨${order.subtotal.toFixed(2)}</td>
+          </tr>
+          <tr style="background-color:#e8f5e9">
+            <td colspan="5" style="padding:10px;border:1px solid #cfcfcf;text-align:right"><strong>Delivery</strong></td>
+            <td style="padding:10px;border:1px solid #cfcfcf;text-align:right">${order.deliveryCharge === 0 ? 'Free' : '₨' + order.deliveryCharge.toFixed(2)}</td>
+          </tr>
+          <tr style="background-color:#c8e6c9">
+            <td colspan="5" style="padding:10px;border:1px solid #cfcfcf;text-align:right"><strong>Grand Total</strong></td>
+            <td style="padding:10px;border:1px solid #cfcfcf;text-align:right">₨${order.totalPrice.toFixed(2)}</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <h3 style="color:#1b5e20;">Payment Method</h3>
+      <p>${order.paymentMethod}</p>
+
+      <p style="text-align:center;margin-top:30px;color:#388e3c;font-style:italic;">Thank you for choosing Natura Bliss 🌿</p>
+    </div>
+  `;
+}
+
+async function buildCustomerOrderHtml(order) {
+  const itemsRows = order.cart.map(it => {
+    const product = PRODUCTS.find(p => p.id === it.id);
+    return `
+      <tr>
+        <td style="padding:6px;border:1px solid #ddd">${it.id}</td>
+        <td style="padding:6px;border:1px solid #ddd">${it.name || 'N/A'}</td>
+        <td style="padding:6px;border:1px solid #ddd;text-align:right">${it.qty}</td>
+        <td style="padding:6px;border:1px solid #ddd;text-align:right">₨${it.price?.toFixed(2) || '0.00'}</td>
+        <td style="padding:6px;border:1px solid #ddd;text-align:right">${product?.volume || '-'}</td>
+        <td style="padding:6px;border:1px solid #ddd;text-align:right">₨${(it.price * it.qty).toFixed(2)}</td>
+      </tr>
+    `;
+  }).join('');
+
+  return `
+  <div style="font-family:Arial,sans-serif; color:#2E3A2F; background:#f9f9f9; padding:20px;">
+    <div style="max-width:700px; margin:auto; background:#fff; border-radius:8px; overflow:hidden; border:1px solid #ddd;">
+      
+      <!-- Logo -->
+      <div style="background:#e6f5ea; text-align:center; padding:20px;">
+        ${logoBase64 ? `<img src="${logoBase64}" alt="Natura Bliss" style="max-width:200px;"/>` : ''}
+      </div>
+
+      <!-- Greeting -->
+      <div style="padding:20px;">
+        <h2 style="color:#2E7D32;">Thank you for your order, ${order.personalDetails.name}!</h2>
+        <p>We have received your order and will contact you within 24 hours to confirm delivery details.</p>
+
+        <!-- Ordered Items -->
+        <h3 style="color:#2E7D32;">Your Order Details</h3>
+        <table style="border-collapse:collapse;width:100%;">
+          <thead>
+            <tr style="background:#e6f5ea;">
+              <th style="padding:6px;border:1px solid #ddd">SKU</th>
+              <th style="padding:6px;border:1px solid #ddd">Product</th>
+              <th style="padding:6px;border:1px solid #ddd">Qty</th>
+              <th style="padding:6px;border:1px solid #ddd">Price</th>
+              <th style="padding:6px;border:1px solid #ddd">Volume</th>
+              <th style="padding:6px;border:1px solid #ddd">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsRows}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="5" style="padding:6px;border:1px solid #ddd;text-align:right"><strong>Items Total</strong></td>
+              <td style="padding:6px;border:1px solid #ddd;text-align:right">₨${order.subtotal.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td colspan="5" style="padding:6px;border:1px solid #ddd;text-align:right"><strong>Delivery</strong></td>
+              <td style="padding:6px;border:1px solid #ddd;text-align:right">${order.deliveryCharge === 0 ? 'Free' : '₨' + order.deliveryCharge.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td colspan="5" style="padding:6px;border:1px solid #ddd;text-align:right"><strong>Grand Total</strong></td>
+              <td style="padding:6px;border:1px solid #ddd;text-align:right">₨${order.totalPrice.toFixed(2)}</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- Delivery Address -->
+        <h3 style="color:#2E7D32;">Delivery Address</h3>
+        <p>
+          ${order.shippingDetails.name}<br/>
+          ${order.shippingDetails.streetAddress}<br/>
+          ${order.shippingDetails.district}, ${order.shippingDetails.city}, ${order.shippingDetails.province}<br/>
+          Phone: ${order.shippingDetails.phone}<br/>
+        </p>
+
+        <!-- Footer -->
+        <p style="margin-top:30px;">If you have any questions, reply to this email or contact us at <strong>${ADMIN_EMAIL}</strong>.</p>
+        <p style="color:#777; font-size:12px;">&copy; ${new Date().getFullYear()} Natura Bliss</p>
+      </div>
+    </div>
+  </div>
   `;
 }
 
@@ -367,28 +500,41 @@ app.post('/api/order', async (req, res) => {
       };
     });
 
-    // Build the email HTML
-    const html = await buildOrderHtml(order);
+    // 1️⃣ Build admin email HTML
+    const adminHtml = await buildOrderHtml(order);
 
-    // Mail options
-    const mailOptions = {
+    // 2️⃣ Send email to admin
+    const adminMailOptions = {
       from: `"${process.env.SENDER_NAME || 'Shop'}" <${process.env.SMTP_USER}>`,
       to: ADMIN_EMAIL,
       subject: `New Order — ${order.personalDetails.name} — ₨${order.totalPrice.toFixed(2)}`,
-      html
+      html: adminHtml
     };
+    await transporter.sendMail(adminMailOptions);
+    console.log('✅ Email sent to admin:', ADMIN_EMAIL);
 
-    // Send the email
-    await transporter.sendMail(mailOptions);
-    console.log('✅ Email sent to', ADMIN_EMAIL);
+    // 3️⃣ Build customer email HTML
+    const customerHtml = await buildCustomerOrderHtml(order);
 
-    return res.json({ success: true, message: "Order sent to admin" });
+    // 4️⃣ Send confirmation email to customer
+    const customerMailOptions = {
+      from: `"Natura Bliss" <${process.env.SMTP_USER}>`,
+      to: order.personalDetails.email,
+      subject: `Your Natura Bliss Order Confirmation — ₨${order.totalPrice.toFixed(2)}`,
+      html: customerHtml
+    };
+    await transporter.sendMail(customerMailOptions);
+    console.log('✅ Confirmation email sent to', order.personalDetails.email);
+
+    // 5️⃣ Respond to frontend
+    return res.json({ success: true, message: "Order sent to admin and confirmation sent to customer" });
 
   } catch (err) {
     console.error("❌ Send mail error:", err);
     return res.status(500).json({ success: false, message: "Failed to send email" });
   }
 });
+
 
 
 // Health check route
