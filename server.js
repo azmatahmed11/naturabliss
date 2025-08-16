@@ -396,13 +396,14 @@ async function buildOrderHtml(order) {
 }
 
 
+
 async function buildCustomerOrderHtml(order) {
   const itemsRows = order.cart.map(it => {
     const product = PRODUCTS.find(p => p.id === it.id);
     return `
       <tr style="font-size:12px;background-color:#fff;">
-        <td style="padding:6px;border:1px solid #ddd;word-break:break-word;">${it.id}</td>
-        <td style="padding:6px;border:1px solid #ddd;word-break:break-word;">${it.name || 'N/A'}</td>
+        <td style="padding:6px;border:1px solid #ddd;word-wrap:break-word;">${it.id}</td>
+        <td style="padding:6px;border:1px solid #ddd;word-wrap:break-word;">${it.name || 'N/A'}</td>
         <td style="padding:6px;border:1px solid #ddd;text-align:center;">${it.qty}</td>
         <td style="padding:6px;border:1px solid #ddd;text-align:right;">₨${it.price?.toFixed(2) || '0.00'}</td>
         <td style="padding:6px;border:1px solid #ddd;text-align:center;">${product?.volume || '-'}</td>
@@ -429,37 +430,34 @@ async function buildCustomerOrderHtml(order) {
 
         <h3 style="color:#2E7D32; margin-top:20px; font-size:16px;">🛒 Your Order Summary</h3>
 
-        <!-- Clean, non-stretching table -->
-        <table style="border-collapse:collapse;width:100%;margin-bottom:20px;table-layout:auto;">
-          <thead style="background:#e6f5ea;font-size:12px;">
-            <tr>
-              <th style="padding:6px;border:1px solid #ddd;text-align:left;">SKU</th>
-              <th style="padding:6px;border:1px solid #ddd;text-align:left;">Product</th>
-              <th style="padding:6px;border:1px solid #ddd;text-align:center;">Qty</th>
-              <th style="padding:6px;border:1px solid #ddd;text-align:right;">Price</th>
-              <th style="padding:6px;border:1px solid #ddd;text-align:center;">Volume</th>
-              <th style="padding:6px;border:1px solid #ddd;text-align:right;">Subtotal</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${itemsRows}
-          </tbody>
-          <tfoot style="font-size:12px;">
-            <tr>
-              <td colspan="5" style="padding:6px;border:1px solid #ddd;text-align:right"><strong>Items Total</strong></td>
-              <td style="padding:6px;border:1px solid #ddd;text-align:right">₨${order.subtotal.toFixed(2)}</td>
-            </tr>
-            <tr>
-              <td colspan="5" style="padding:6px;border:1px solid #ddd;text-align:right"><strong>Delivery</strong></td>
-              <td style="padding:6px;border:1px solid #ddd;text-align:right">${order.deliveryCharge === 0 ? 'Free' : '₨' + order.deliveryCharge.toFixed(2)}</td>
-            </tr>
-            <tr style="background:#e6f5ea;font-weight:bold;">
-              <td colspan="5" style="padding:6px;border:1px solid #ddd;text-align:right"><strong>Grand Total</strong></td>
-              <td style="padding:6px;border:1px solid #ddd;text-align:right; color:#2E7D32;">₨${order.totalPrice.toFixed(2)}</td>
-            </tr>
-          </tfoot>
-        </table>
-
+        <!-- Responsive-friendly table -->
+        <table style="border-collapse:collapse;width:100%;margin-bottom:20px;table-layout:fixed;">
+        <thead style="background-color:#a5d6a7;color:#1b5e20">
+          <tr>
+            <th style="padding:6px;border:1px solid #cfcfcf;text-align:left;font-size:12px;">SKU</th>
+            <th style="padding:6px;border:1px solid #cfcfcf;text-align:left;font-size:12px;">Product</th>
+            <th style="padding:6px;border:1px solid #cfcfcf;text-align:center;font-size:12px;">Qty</th>
+            <th style="padding:6px;border:1px solid #cfcfcf;text-align:right;font-size:12px;">Price</th>
+            <th style="padding:6px;border:1px solid #cfcfcf;text-align:center;font-size:12px;">Volume</th>
+            <th style="padding:6px;border:1px solid #cfcfcf;text-align:right;font-size:12px;">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>${itemsRows}</tbody>
+        <tfoot>
+          <tr style="background-color:#e8f5e9;font-size:12px;">
+            <td colspan="5" style="padding:6px;border:1px solid #cfcfcf;text-align:right"><strong>Items Total</strong></td>
+            <td style="padding:6px;border:1px solid #cfcfcf;text-align:right">₨${order.subtotal.toFixed(2)}</td>
+          </tr>
+          <tr style="background-color:#e8f5e9;font-size:12px;">
+            <td colspan="5" style="padding:6px;border:1px solid #cfcfcf;text-align:right"><strong>Delivery</strong></td>
+            <td style="padding:6px;border:1px solid #cfcfcf;text-align:right">${order.deliveryCharge === 0 ? 'Free' : '₨' + order.deliveryCharge.toFixed(2)}</td>
+          </tr>
+          <tr style="background-color:#c8e6c9;font-size:12px;">
+            <td colspan="5" style="padding:6px;border:1px solid #cfcfcf;text-align:right"><strong>Grand Total</strong></td>
+            <td style="padding:6px;border:1px solid #cfcfcf;text-align:right">₨${order.totalPrice.toFixed(2)}</td>
+          </tr>
+        </tfoot>
+      </table>
         <!-- Address -->
         <h3 style="color:#2E7D32; margin-top:20px; font-size:16px;">📦 Shipping Details</h3>
         <p style="line-height:1.6; color:#444; font-size:13px;">
