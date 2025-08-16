@@ -396,42 +396,42 @@ async function buildOrderHtml(order) {
 }
 
 
-
 async function buildCustomerOrderHtml(order) {
-  const itemsRows = order.cart.map(it => {
+  const itemsRows = order.cart.map((it, i) => {
     const product = PRODUCTS.find(p => p.id === it.id);
+    const bgColor = i % 2 === 0 ? '#f6fff6' : '#ffffff'; // same striping as admin
     return `
-      <tr style="font-size:12px;background-color:#fff;">
-        <td style="padding:6px;border:1px solid #ddd;word-wrap:break-word;">${it.id}</td>
-        <td style="padding:6px;border:1px solid #ddd;word-wrap:break-word;">${it.name || 'N/A'}</td>
-        <td style="padding:6px;border:1px solid #ddd;text-align:center;">${it.qty}</td>
-        <td style="padding:6px;border:1px solid #ddd;text-align:right;">₨${it.price?.toFixed(2) || '0.00'}</td>
-        <td style="padding:6px;border:1px solid #ddd;text-align:center;">${product?.volume || '-'}</td>
-        <td style="padding:6px;border:1px solid #ddd;text-align:right;">₨${(it.price * it.qty).toFixed(2)}</td>
+      <tr style="background-color:${bgColor};font-size:12px;">
+        <td style="padding:6px;border:1px solid #cfcfcf;word-wrap:break-word;">${it.id}</td>
+        <td style="padding:6px;border:1px solid #cfcfcf;word-wrap:break-word;">${it.name || 'N/A'}</td>
+        <td style="padding:6px;border:1px solid #cfcfcf;text-align:center;">${it.qty}</td>
+        <td style="padding:6px;border:1px solid #cfcfcf;text-align:right;">₨${it.price?.toFixed(2) || '0.00'}</td>
+        <td style="padding:6px;border:1px solid #cfcfcf;text-align:center;">${product?.volume || '-'}</td>
+        <td style="padding:6px;border:1px solid #cfcfcf;text-align:right;">₨${(it.price * it.qty).toFixed(2)}</td>
       </tr>
     `;
   }).join('');
 
   return `
-  <div style="font-family:Arial,sans-serif; color:#2E3A2F; background:#f4f7f6; padding:20px;">
-    <div style="max-width:700px; margin:auto; background:#fff; border-radius:10px; overflow:hidden; border:1px solid #ddd;">
+    <div style="font-family:Arial,sans-serif;color:#2f4f2f;background-color:#f9fff9;padding:20px;max-width:800px;margin:auto;border-radius:8px;">
       
       <!-- Logo -->
-      <div style="background:#e6f5ea; text-align:center; padding:20px;">
-        ${logoBase64 ? `<img src="${logoBase64}" alt="Natura Bliss" style="max-width:180px; height:auto;"/>` : ''}
-      </div>
+      ${logoBase64 ? `<div style="text-align:center;margin-bottom:20px;">
+        <img src="${logoBase64}" alt="Natura Bliss" style="max-width:160px;height:auto;display:block;margin:0 auto;">
+      </div>` : ''}
 
-      <div style="padding:20px;">
-        <h2 style="color:#2E7D32; text-align:center; font-size:18px;">🌿 Thank you for your order, ${order.personalDetails.name}! 🌿</h2>
-        <p style="text-align:center; font-size:14px; color:#555;">
-          We truly appreciate your trust in <strong>Natura Bliss</strong>.<br/>
-          Your order has been received and we’ll contact you within 24 hours to confirm delivery.
-        </p>
+      <!-- Greeting -->
+      <h2 style="color:#2e7d32;text-align:center;margin-bottom:10px;">🌿 Thank you for your order, ${order.personalDetails.name}! 🌿</h2>
+      <p style="text-align:center;font-size:13px;color:#666;margin-top:0;">
+        We truly appreciate your trust in <strong>Natura Bliss</strong>.<br/>
+        Your order has been received on <strong>${new Date(order.orderDate).toLocaleString()}</strong>.<br/>
+        We’ll contact you within 24 hours to confirm delivery.
+      </p>
 
-        <h3 style="color:#2E7D32; margin-top:20px; font-size:16px;">🛒 Your Order Summary</h3>
+      <!-- Order Summary -->
+      <h3 style="color:#1b5e20;border-bottom:2px solid #c8e6c9;padding-bottom:4px;">🛒 Your Order Summary</h3>
 
-        <!-- Responsive-friendly table -->
-        <table style="border-collapse:collapse;width:100%;margin-bottom:20px;table-layout:fixed;">
+      <table style="border-collapse:collapse;width:100%;margin-bottom:20px;table-layout:fixed;">
         <thead style="background-color:#a5d6a7;color:#1b5e20">
           <tr>
             <th style="padding:6px;border:1px solid #cfcfcf;text-align:left;font-size:12px;">SKU</th>
@@ -458,31 +458,33 @@ async function buildCustomerOrderHtml(order) {
           </tr>
         </tfoot>
       </table>
-        <!-- Address -->
-        <h3 style="color:#2E7D32; margin-top:20px; font-size:16px;">📦 Shipping Details</h3>
-        <p style="line-height:1.6; color:#444; font-size:13px;">
-          <strong>${order.shippingDetails.name}</strong><br/>
-          ${order.shippingDetails.streetAddress}<br/>
-          ${order.shippingDetails.district}, ${order.shippingDetails.city}, ${order.shippingDetails.province}<br/>
-          Phone: ${order.shippingDetails.phone}<br/>
-        </p>
 
-        <div style="margin-top:20px; text-align:center;">
-          <p style="font-size:14px; color:#2E7D32;">
-            💚 Thank you for shopping with Natura Bliss!<br/>
-            We hope you enjoy your purchase.
-          </p>
-        </div>
+      <!-- Shipping Details -->
+      <h3 style="color:#1b5e20;border-bottom:2px solid #c8e6c9;padding-bottom:4px;">📦 Shipping Details</h3>
+      <p style="font-size:13px;line-height:1.5;">
+        <strong>Name:</strong> ${order.shippingDetails.name}<br/>
+        <strong>Phone:</strong> ${order.shippingDetails.phone}<br/>
+        <strong>Address:</strong> ${order.shippingDetails.streetAddress}, ${order.shippingDetails.district}, ${order.shippingDetails.city}, ${order.shippingDetails.province}<br/>
+        ${order.shippingDetails.additionalDetails ? `<strong>Additional Details:</strong> ${order.shippingDetails.additionalDetails}<br/>` : ''}
+      </p>
 
-        <p style="margin-top:20px; text-align:center; color:#777; font-size:11px;">
-          If you have any questions, reply to this email or contact us at <strong>${ADMIN_EMAIL}</strong>.<br/>
-          &copy; ${new Date().getFullYear()} Natura Bliss 🌿
-        </p>
-      </div>
+      <!-- Payment Method -->
+      <h3 style="color:#1b5e20;border-bottom:2px solid #c8e6c9;padding-bottom:4px;">💳 Payment Method</h3>
+      <p style="font-size:13px;">${order.paymentMethod}</p>
+
+      <!-- Footer -->
+      <p style="text-align:center;margin-top:30px;color:#388e3c;font-style:italic;font-size:13px;">
+        💚 Thank you for shopping with Natura Bliss! We hope you enjoy your purchase.  
+      </p>
+
+      <p style="margin-top:20px; text-align:center; color:#777; font-size:11px;">
+        If you have any questions, reply to this email or contact us at <strong>${ADMIN_EMAIL}</strong>.<br/>
+        &copy; ${new Date().getFullYear()} Natura Bliss 🌿
+      </p>
     </div>
-  </div>
   `;
 }
+
 
 
 
